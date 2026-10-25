@@ -22,8 +22,13 @@ int main(int argc, char *argv[])
     int sign1 = (argv[1][0] == '-') ? -1 : 1;
     int sign2 = (argv[3][0] == '-') ? -1 : 1;
     // Create 2 lists of operands
-    create_list(argv[1], &head1, &tail1);
-    create_list(argv[3], &head2, &tail2);
+    if(create_list(argv[1], &head1, &tail1) == FAILURE ||create_list(argv[3], &head2, &tail2) == FAILURE)
+    {
+	    printf("Error : Failed to create operand list\n");
+	    delete_list(&head1, &tail1);
+	    delete_list(&head2, &tail2);
+	    return FAILURE;
+    }
     // Remove pre zeros
     remove_pre_zeros(&head1);
     remove_pre_zeros(&head2);
@@ -38,7 +43,10 @@ int main(int argc, char *argv[])
 	    int result_sign;
 	    if(sign1 == sign2)
 	    {
-	    	addition(tail1, tail2, &headR, &tailR);
+	    	if (addition(tail1, tail2, &headR, &tailR) == FAILURE)
+		{
+    			printf("Error: Addition failed\n");
+		}
 	        result_sign = sign1;
 	    }
 	    else if(cmp == 0)
@@ -48,12 +56,26 @@ int main(int argc, char *argv[])
 	    }
 	    else if(cmp > 0)
 	    {
-		    subtraction(tail1, tail2, &headR, &tailR);
+		    if (subtraction(tail1, tail2, &headR, &tailR) == FAILURE)
+		    {
+    			printf("Error: Subtraction failed\n");
+    			delete_list(&head1, &tail1);
+    			delete_list(&head2, &tail2);
+    			delete_list(&headR, &tailR);
+    			return FAILURE;
+		    }
 		    result_sign = sign1;
 	    }
 	    else
 	    {
-		    subtraction(tail2, tail1, &headR, &tailR);
+		     if (subtraction(tail1, tail2, &headR, &tailR) == FAILURE)
+                    {
+                        printf("Error: Subtraction failed\n");
+                        delete_list(&head1, &tail1);
+                        delete_list(&head2, &tail2);
+                        delete_list(&headR, &tailR);
+                        return FAILURE;
+                    }
 		    result_sign = sign2;
 	    }
 	    if(result_sign < 0 && !is_zero(headR))
@@ -70,7 +92,10 @@ int main(int argc, char *argv[])
 	    int result_sign;
 	    if(sign1 == effective_sign2)
 	    {
-		    addition(tail1, tail2, &headR, &tailR);
+	        if (addition(tail1, tail2, &headR, &tailR) == FAILURE)
+                {
+                        printf("Error: Addition failed\n");
+                }
 		    result_sign = sign1;
 	    }
 	    else if(cmp == 0)
@@ -80,12 +105,26 @@ int main(int argc, char *argv[])
 	    }
 	    else if(cmp > 0)
 	    {
-	    	subtraction(tail1, tail2, &headR, &tailR);
+	    	 if (subtraction(tail1, tail2, &headR, &tailR) == FAILURE)
+                    {
+                        printf("Error: Subtraction failed\n");
+                        delete_list(&head1, &tail1);
+                        delete_list(&head2, &tail2);
+                        delete_list(&headR, &tailR);
+                        return FAILURE;
+                    }
 	    	result_sign = sign1;
 	    }
 	    else
 	    {
-	 	subtraction(tail2, tail1, &headR, &tailR);
+	 	 if (subtraction(tail1, tail2, &headR, &tailR) == FAILURE)
+                    {
+                        printf("Error: Subtraction failed\n");
+                        delete_list(&head1, &tail1);
+                        delete_list(&head2, &tail2);
+                        delete_list(&headR, &tailR);
+                        return FAILURE;
+                    }
 		result_sign = effective_sign2;
 	    }
 	    if(result_sign < 0 && !is_zero(headR))
@@ -98,7 +137,14 @@ int main(int argc, char *argv[])
 
 	case 'x':
 	case 'X':
-	    multiplication(tail1, tail2, &headR, &tailR);
+	case '*':
+	    if (multiplication(tail1, tail2, &headR, &tailR) == FAILURE)
+	    {
+    		delete_list(&head1, &tail1);
+    		delete_list(&head2, &tail2);
+    		delete_list(&headR, &tailR);
+    		return FAILURE;
+	    }
 	    if(headR != NULL && !(headR -> data == 0 && headR-> next == NULL))
 	    {
 	        if(sign1 != sign2)
@@ -114,7 +160,13 @@ int main(int argc, char *argv[])
 		    printf("Error: Division by Zero\n");
 		    break;
 	    }
-            division(head1, head2, &headR, &tailR);
+            if (division(head1, head2, &headR, &tailR) == FAILURE)
+	    {
+    		delete_list(&head1, &tail1);
+    		delete_list(&head2, &tail2);
+    		delete_list(&headR, &tailR);
+    		return FAILURE;
+	    }
 	    if(headR != NULL && !(headR -> data ==0 && headR -> next == NULL))
 	    {
 		    if(sign1 != sign2)

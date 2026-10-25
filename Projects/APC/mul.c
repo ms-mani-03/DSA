@@ -1,10 +1,14 @@
 
 #include "apc.h"
 
-void multiplication(node *tail1, node *tail2, node **headR, node **tailR)
+int multiplication(node *tail1, node *tail2,
+                   node **headR, node **tailR)
 {
     node *resultHead = NULL;
     node *resultTail = NULL;
+
+    if (headR == NULL || tailR == NULL)
+        return FAILURE;
 
     *headR = NULL;
     *tailR = NULL;
@@ -18,10 +22,12 @@ void multiplication(node *tail1, node *tail2, node **headR, node **tailR)
         node *sumHead = NULL;
         node *sumTail = NULL;
 
-        multiply_by_digit(tail1, tail2->data, &partialHead, &partialTail);
-
-        if (partialHead == NULL)
+        if (multiply_by_digit(tail1, tail2->data,
+                              &partialHead, &partialTail) == FAILURE)
+        {
+            delete_list(&partialHead, &partialTail);
             goto memory_error;
+        }
 
         for (int i = 0; i < shift; i++)
         {
@@ -32,11 +38,11 @@ void multiplication(node *tail1, node *tail2, node **headR, node **tailR)
             }
         }
 
-        addition(resultTail, partialTail, &sumHead, &sumTail);
-
-        if (sumHead == NULL)
+        if (addition(resultTail, partialTail,
+                     &sumHead, &sumTail) == FAILURE)
         {
             delete_list(&partialHead, &partialTail);
+            delete_list(&sumHead, &sumTail);
             goto memory_error;
         }
 
@@ -64,12 +70,14 @@ void multiplication(node *tail1, node *tail2, node **headR, node **tailR)
 
     *headR = resultHead;
     *tailR = resultTail;
-    return;
+
+    return SUCCESS;
 
 memory_error:
     delete_list(&resultHead, &resultTail);
     *headR = NULL;
     *tailR = NULL;
     printf("Error: Multiplication failed\n");
+    return FAILURE;
 }
 

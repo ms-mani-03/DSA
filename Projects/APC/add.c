@@ -1,10 +1,13 @@
 
 #include "apc.h"
 
-void addition(node *tail1, node *tail2,
+int addition(node *tail1, node *tail2,
               node **headR, node **tailR)
 {
     int carry = 0;
+
+    if (headR == NULL || tailR == NULL)
+        return FAILURE;
 
     *headR = NULL;
     *tailR = NULL;
@@ -31,19 +34,25 @@ void addition(node *tail1, node *tail2,
         if (insert_first(headR, tailR, digit) == FAILURE)
         {
             delete_list(headR, tailR);
-            return;
+            return FAILURE;
         }
     }
 
     if (*headR == NULL)
     {
         if (insert_first(headR, tailR, 0) == FAILURE)
-            return;
+        {
+            delete_list(headR, tailR);
+            return FAILURE;
+        }
     }
 
     remove_pre_zeros(headR);
-    *tailR = *headR;
 
+    *tailR = *headR;
     while (*tailR != NULL && (*tailR)->next != NULL)
         *tailR = (*tailR)->next;
+
+    return SUCCESS;
 }
+

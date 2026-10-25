@@ -1,9 +1,13 @@
 
 #include "apc.h"
 
-void subtraction(node *tail1, node *tail2, node **headR, node **tailR)
+int subtraction(node *tail1, node *tail2,
+                node **headR, node **tailR)
 {
     int borrow = 0;
+
+    if (headR == NULL || tailR == NULL)
+        return FAILURE;
 
     *headR = NULL;
     *tailR = NULL;
@@ -42,14 +46,17 @@ void subtraction(node *tail1, node *tail2, node **headR, node **tailR)
         if (insert_first(headR, tailR, digit) == FAILURE)
         {
             delete_list(headR, tailR);
-            return;
+            return FAILURE;
         }
     }
 
     if (*headR == NULL)
     {
         if (insert_first(headR, tailR, 0) == FAILURE)
-            return;
+        {
+            delete_list(headR, tailR);
+            return FAILURE;
+        }
     }
 
     remove_pre_zeros(headR);
@@ -57,5 +64,7 @@ void subtraction(node *tail1, node *tail2, node **headR, node **tailR)
     *tailR = *headR;
     while (*tailR != NULL && (*tailR)->next != NULL)
         *tailR = (*tailR)->next;
+
+    return SUCCESS;
 }
 

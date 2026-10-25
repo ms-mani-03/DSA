@@ -29,7 +29,7 @@ int cla_validation(int argc, char *argv[])
 		printf("Usage : ./apc <operand1> <operator> < oprand2>\n"); 
 		return FAILURE;
 	}
-	if(argv[2][0] != '+' && argv[2][0] != '-' && argv[2][0] != 'x' && argv[2][0] != 'X' && argv[2][0] != '/')
+	if(argv[2][0] != '+' && argv[2][0] != '-' && argv[2][0] != 'x' && argv[2][0] != 'X' && argv[2][0] != '*' && argv[2][0] != '/')
 	{
 		printf("Error : Invalid Operator\n");
 		return FAILURE;
@@ -38,34 +38,32 @@ int cla_validation(int argc, char *argv[])
 }
 
 //List Creation
-void create_list(char *opr, node **head, node **tail)
+
+int create_list(char *opr, node **head, node **tail)
 {
-	int i = 0;
-	node *new;
-	if(opr[i] == '-' || opr[i] == '+')
-		i++;
-	while(opr[i] != '\0')
-	{
-		new = malloc(sizeof(node));
-		if(new == NULL)
-		{
-			perror("Malloc");
-			exit(EXIT_FAILURE);
-		}
-		new -> data = opr[i] - '0';
-		new -> prev = *tail;
-		new -> next = NULL;
-		if(*head == NULL)
-		{
-			*head = new;
-		}
-		else
-		{
-			(*tail) -> next = new;
-		}
-		*tail = new;
-		i++;
-	}
+    if (opr == NULL || head == NULL || tail == NULL)
+        return FAILURE;
+
+    *head = NULL;
+    *tail = NULL;
+
+    int i = 0;
+
+    if (opr[i] == '-' || opr[i] == '+')
+        i++;
+
+    while (opr[i] != '\0')
+    {
+        if (insert_last(head, tail, opr[i] - '0') == FAILURE)
+        {
+       	    delete_list(head, tail);
+            return FAILURE;
+        }
+
+        i++;
+    }
+
+    return SUCCESS;
 }
 
 // print list
@@ -181,9 +179,12 @@ int compare_list(node *head1, node *head2)
 
 //Multipliction helper
 
-void multiply_by_digit(node *tail, int digit, node **headR, node **tailR)
+int multiply_by_digit(node *tail, int digit, node **headR, node **tailR)
 {
     int carry = 0;
+
+    if (headR == NULL || tailR == NULL)
+        return FAILURE;
 
     *headR = NULL;
     *tailR = NULL;
@@ -204,15 +205,20 @@ void multiply_by_digit(node *tail, int digit, node **headR, node **tailR)
         if (insert_first(headR, tailR, result_digit) == FAILURE)
         {
             delete_list(headR, tailR);
-            return;
+            return FAILURE;
         }
     }
 
     if (*headR == NULL)
     {
         if (insert_first(headR, tailR, 0) == FAILURE)
-            return;
+        {
+            delete_list(headR, tailR);
+            return FAILURE;
+        }
     }
+
+    return SUCCESS;
 }
 
 //Delete_list
